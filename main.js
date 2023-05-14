@@ -1,51 +1,20 @@
-function game() {
-    let playerScore = 0
-    let computerScore = 0
-    let i = 1
 
-    while (i != 6) {
-        result = (playRound(getComputerSelection(), getPlayerSelection(`Round - ${i} Choose: Rock, Paper or Scissors`)))
-        switch (result) {
-            case "win":
-                playerScore++
-                i++
-                break;
-        
-            case "lose":
-                computerScore++
-                i++
-                break;
+const playerScoreText = document.querySelector('.player-score')
+const computerScoreText = document.querySelector('.computer-score')
+const infoText = document.querySelector('.info-text')
+const buttons = document.querySelectorAll('button')
 
-            case "draw":
-                playerScore++
-                i++
-                break;
-        }
-    }
-    console.log(`Game finished, player has ${playerScore} points, computer has ${computerScore} points`)
-}
+let roundCount = 0
 
-function playRound(computerSelection, playerSelection) {
-    
-    console.log(`Computer chose ${computerSelection}`)
-    console.log(`Player chose ${playerSelection}`)
+const buttonListen = document.querySelectorAll('button')
+buttonListen.forEach((button) => {
+    button.addEventListener('click', (e) => {
+        getPlayerSelection(e)
+    })
+})
 
-    if (computerSelection == playerSelection) {
-        console.log(`It's a draw, you both picked ${computerSelection}`)
-        return "draw"
-    }
-
-    else if ((playerSelection == "rock" && computerSelection == "scissors") || 
-            (playerSelection == "player" && computerSelection == "rock") ||
-            (playerSelection == "scissors" && computerSelection == "paper")) {
-        console.log(`You win! ${playerSelection} beats ${computerSelection}`)
-        return "win"
-    }
-
-    else {
-        console.log(`You lose, ${computerSelection} beats ${playerSelection}`)
-        return "lose"
-    }
+function getPlayerSelection(e) {
+    game(e.target.className)
 }
 
 function getComputerSelection() {
@@ -53,12 +22,50 @@ function getComputerSelection() {
     return arr[Math.floor(arr.length * Math.random())]
 }
 
-function getPlayerSelection(message) {
-    return checkPlayerSelection(prompt(message).toLowerCase())
+function game(playerSelection) {
+    let roundResult = playRound(playerSelection)
+    scoreChange = calculateScore(roundResult)
+    roundCount += 1
+
+    roundCount == 5 ? endGame() : false
 }
 
-function checkPlayerSelection(s) {
-    return ["rock", "paper", "scissors"].includes(s) == true ? s : getPlayerSelection("Invalid choice, please try again")
+function playRound(playerSelection) {
+    let computerSelection = getComputerSelection()
+
+    if (computerSelection == playerSelection) {
+        infoText.textContent = `It's a draw, you both picked ${playerSelection}`
+        return("draw")
+    }
+    else if ((playerSelection == "rock" && computerSelection == "scissors") || 
+            (playerSelection == "player" && computerSelection == "rock") ||
+            (playerSelection == "scissors" && computerSelection == "paper")) {
+        infoText.textContent = `You win! ${playerSelection} beats ${computerSelection}`
+        return("win")
+    }
+    else {
+        infoText.textContent = `You lose! ${computerSelection} beats ${playerSelection}`
+        return("lose")
+    }
 }
 
-game()
+function calculateScore(result) {
+    if (result == "win") {
+        playerScoreText.textContent++
+    }
+    else if (result == "lose") {
+        computerScoreText.textContent++
+    }
+    else {
+        playerScoreText.textContent++
+        computerScoreText.textContent++
+    }
+    return
+}
+
+function endGame() {   
+    infoText.textContent = `Game over. Thank you for playing`
+    buttons.forEach ((button) => {
+        button.setAttribute('id', 'hide')
+    })
+}
